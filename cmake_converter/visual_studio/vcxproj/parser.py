@@ -40,7 +40,6 @@ class VCXParser(Parser):
 
     def get_node_handlers_dict(self, context):
         node_handlers = {}
-
         node_handlers.update(
             dict.fromkeys(context.flags.flags_handlers.keys(), context.flags.set_flag)
         )
@@ -58,17 +57,17 @@ class VCXParser(Parser):
             'ProjectGuid': self.do_nothing_node_stub,
             'RootNamespace': context.variables.set_root_namespace,
             'Keyword': context.variables.set_keyword,
-            'RestorePackages': self.do_nothing_node_stub,             # no support in CMake
+            'RestorePackages': self.do_nothing_node_stub,  # no support in CMake
             '_ProjectFileVersion': self.do_nothing_node_stub,
             'VCProjectVersion': self.do_nothing_node_stub,
-            'CodeAnalysisRuleSet': self.do_nothing_node_stub,         # no support in CMake
-            'CodeAnalysisRules': self.do_nothing_node_stub,           # no support in CMake
+            'CodeAnalysisRuleSet': self.do_nothing_node_stub,  # no support in CMake
+            'CodeAnalysisRules': self.do_nothing_node_stub,  # no support in CMake
             'CodeAnalysisRuleAssemblies': self.do_nothing_node_stub,  # no support in CMake
-            'RunCodeAnalysis': self.do_nothing_node_stub,             # no support in CMake
-            'SccProjectName': self.do_nothing_node_stub,              # no support in CMake
-            'SccAuxPath': self.do_nothing_node_stub,                  # no support in CMake
-            'SccLocalPath': self.do_nothing_node_stub,                # no support in CMake
-            'SccProvider': self.do_nothing_node_stub,                 # no support in CMake
+            'RunCodeAnalysis': self.do_nothing_node_stub,  # no support in CMake
+            'SccProjectName': self.do_nothing_node_stub,  # no support in CMake
+            'SccAuxPath': self.do_nothing_node_stub,  # no support in CMake
+            'SccLocalPath': self.do_nothing_node_stub,  # no support in CMake
+            'SccProvider': self.do_nothing_node_stub,  # no support in CMake
             'WindowsTargetPlatformVersion': context.variables.set_windows_target_version,
             'ItemDefinitionGroup': self.__parse_item_definition_group,
             'Import': self._parse_nodes,
@@ -86,11 +85,11 @@ class VCXParser(Parser):
             'ExcludedFromBuild': self.__parse_excluded_from_build,
             'ProjectReference': self._parse_nodes,
             'Project': self.do_nothing_node_stub,  # just GUID at <ProjectReference>
-            'Private': self.do_nothing_node_stub,                       # no support in CMake
-            'ReferenceOutputAssembly': self.do_nothing_node_stub,       # no support in CMake
+            'Private': self.do_nothing_node_stub,  # no support in CMake
+            'ReferenceOutputAssembly': self.do_nothing_node_stub,  # no support in CMake
             'CopyLocalSatelliteAssemblies': self.do_nothing_node_stub,  # no support in CMake
             'LinkLibraryDependencies': context.dependencies.set_link_library_dependencies,
-            'UseLibraryDependencyInputs': self.do_nothing_node_stub,    # no support in CMake
+            'UseLibraryDependencyInputs': self.do_nothing_node_stub,  # no support in CMake
             'AdditionalIncludeDirectories': context.dependencies.set_include_dirs,
             'AdditionalDependencies': context.dependencies.set_target_additional_dependencies,
             'AdditionalLibraryDirectories':
@@ -109,7 +108,7 @@ class VCXParser(Parser):
             'IntDir': self.do_nothing_node_stub,  # no analog at CMake
             'OutDir': context.variables.set_output_dir,
             'TargetName': self.__parse_target_name_node,
-            'EnablePREfast': self.do_nothing_node_stub,     # no support from CMake
+            'EnablePREfast': self.do_nothing_node_stub,  # no support from CMake
             'AdditionalOptions': self.__parse_additional_options,
         })
         return node_handlers
@@ -276,7 +275,7 @@ class VCXParser(Parser):
             if node.text in ('true', 'PGInstrument', 'PGOptimize', 'PGUpdate'):
                 context.settings[context.current_setting]['INTERPROCEDURAL_OPTIMIZATION'] = ['TRUE']
             else:
-                context.settings[context.current_setting]['INTERPROCEDURAL_OPTIMIZATION'] =\
+                context.settings[context.current_setting]['INTERPROCEDURAL_OPTIMIZATION'] = \
                     ['FALSE']
 
     @staticmethod

@@ -23,6 +23,7 @@
 """
     Module that defines all the CMake variables to be used by the C/C++ project
 """
+from lxml.etree import _Element
 
 from cmake_converter.project_variables import ProjectVariables
 from cmake_converter.utils import message
@@ -54,11 +55,11 @@ class VCXProjectVariables(ProjectVariables):
         context.settings[context.current_setting]['VS_GLOBAL_KEYWORD'] = [node.text]
 
     @staticmethod
-    def set_windows_target_version(context, node):
+    def set_windows_target_version(context, node: _Element):
         """ Sets windows target version(SDK version) into context from node text """
         context.target_windows_version = node.text
 
-    def set_output_dir(self, context, node):
+    def set_output_dir(self, context, node: _Element):
         """ Sets output dir into context from node text """
         self.set_output_dir_impl(context, node.text)
 
@@ -67,7 +68,7 @@ class VCXProjectVariables(ProjectVariables):
         if output_file_node is not None:
             self.set_output_file_impl(context, output_file_node.text)
 
-    def set_import_library(self, context, node):
+    def set_import_library(self, context, node: _Element):
         """ Sets import library into context from node text """
         self.set_path_and_name_from_node(
             context,
@@ -77,7 +78,7 @@ class VCXProjectVariables(ProjectVariables):
             'ARCHIVE_OUTPUT_NAME'
         )
 
-    def set_program_database_file(self, context, node):
+    def set_program_database_file(self, context, node: _Element):
         """ Sets program database file into context from node text """
         self.set_path_and_name_from_node(
             context,

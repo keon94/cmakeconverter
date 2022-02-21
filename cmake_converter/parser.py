@@ -26,6 +26,8 @@ Module of Basic logic of parsers for Visual Solution projects
 
 import re
 
+from lxml.etree import _Element
+
 from cmake_converter.utils import message
 
 
@@ -37,6 +39,7 @@ class Parser:
     """
     Basic class of parsers for Visual Solution projects
     """
+
     def __init__(self):
         self.reset_setting_after_nodes = set()
 
@@ -70,7 +73,7 @@ class Parser:
         """ Removes namespace from xml tag """
         return re.sub(r'{.*\}', '', tag)
 
-    def _parse_nodes(self, context, parent):
+    def _parse_nodes(self, context, parent: _Element):
         for child_node in parent:
             if not isinstance(child_node.tag, str):
                 continue
@@ -94,10 +97,11 @@ class Parser:
                 context.current_node = parent
                 continue
 
-            node_handlers = self.get_node_handlers_dict(context)
+            node_handlers: dict[str, callable] = self.get_node_handlers_dict(context)
             if child_node_tag in node_handlers:
                 if child_node.text is not None:
                     child_node.text = child_node.text.strip()
+                    child_node.text = context.resolve_custom_variables(child_node.text)
                     node_handlers[child_node_tag](context, child_node)
             else:
                 message(context, 'No handler for <{}> node.'.format(child_node_tag), 'warn3')
@@ -108,15 +112,19 @@ class Parser:
 
             context.current_node = parent
 
-    def _parse_attributes(self, context, node):
+    def _parse_attributes(self, context, node: _Element):
         for attr in node.attrib:
             node_tag = Parser.strip_namespace(node.tag)
             node_key = '{}_{}'.format(node_tag, attr)
             attributes_handlers = self.get_attribute_handlers_dict(context)
-            if node_key in attributes_handlers:    # node specified handler
-                attributes_handlers[node_key](context, node_key, node.get(attr), node)
-            elif attr in attributes_handlers:      # common attribute handler
-                attributes_handlers[attr](context, attr, node.get(attr), node)
+            if node_key in attributes_handlers:  # node specified handler
+                val = node.get(attr)
+                val = context.resolve_custom_variables(val)
+                attributes_handlers[node_key](context, node_key, val, node)
+            elif attr in attributes_handlers:  # common attribute handler
+                val = node.get(attr)
+                val = context.resolve_custom_variables(val)
+                attributes_handlers[attr](context, attr, val, node)
             else:
                 message(
                     context,

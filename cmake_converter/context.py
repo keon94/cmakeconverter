@@ -27,6 +27,7 @@
 """
 
 import os
+import re
 import time
 from multiprocessing import cpu_count
 from collections import OrderedDict
@@ -40,6 +41,7 @@ class Context:
     """
         Converter context
     """
+
     def __init__(self):
         self.time0 = time.time()
         self.jobs = cpu_count()
@@ -86,12 +88,14 @@ class Context:
         self.warnings_count = 0
         # helpers
         self.parser = None
-        self.variables = None
+        from visual_studio.vcxproj.project_variables import VCXProjectVariables
+        self.variables: VCXProjectVariables = None
         self.files = None
         self.flags = None
         self.dependencies = None
         self.utils = None
         self.writer = CMakeWriter()
+        self.custom_variables = dict[str, str]()
 
     def clone(self):
         """
@@ -171,3 +175,14 @@ class Context:
             self.cmake = 'CMakeLists.txt'
 
         return self.cmake
+
+    def resolve_custom_variables(self, text: str) -> str:
+        new_text = text
+        for var_key, var_val in self.custom_variables.items():
+            try:
+                new_text = re.sub(r'\$\({var_name}\)'.format(var_name=var_key), var_val, new_text)
+            except Exception as e:
+                pass
+        if new_text != text:
+            print()
+        return new_text

@@ -35,6 +35,7 @@ import copy
 from cmake_converter.data_files import get_cmake_lists
 from cmake_converter.utils import message
 from cmake_converter.context import Context
+from cmake_converter.visual_studio.context import VSContext
 
 
 class DataConverter:
@@ -43,7 +44,7 @@ class DataConverter:
     """
 
     @staticmethod
-    def collect_data(context):
+    def collect_data(context: VSContext):
         """
         Collect data for converter.
 
@@ -105,7 +106,7 @@ class DataConverter:
                 context,
                 'There are absent settings at {}: {}\n'
                 'skipping conversion. Add lost settings or fix mapping of settings at solution'
-                .format(context.vcxproj_path, absent_settings),
+                    .format(context.vcxproj_path, absent_settings),
                 'error'
             )
             return False
@@ -239,7 +240,7 @@ class DataConverter:
 
         context.writer.write_target_cmake_lists(context, cmake_file)
 
-    def convert_project(self, context, xml_project_path, cmake_lists_destination_path):
+    def convert_project(self, context: VSContext, xml_project_path: str, cmake_lists_destination_path: str):
         """
         Method template for data collecting and writing
 
@@ -275,7 +276,7 @@ class DataConverter:
 
         return True
 
-    def run_conversion(self, subdirectory_targets_data):
+    def run_conversion(self, subdirectory_targets_data: list[dict[int, int]]):
         """ Routine that converts projects located at the same directory """
         results = []
         for target_data in subdirectory_targets_data:
@@ -315,7 +316,7 @@ class DataConverter:
         if project_context.jobs > 1:
             with Pool(project_context.jobs) as pool:
                 results = pool.map(self.run_conversion, input_converter_data_list)
-        else:   # do in main thread
+        else:  # do in main thread
             for data_for_converter in input_converter_data_list:
                 results.append(self.run_conversion(data_for_converter))
 

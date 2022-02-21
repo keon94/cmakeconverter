@@ -103,6 +103,14 @@ def main():  # pragma: no cover
         default=False,
         action='store_true'
     )
+    parser.add_argument(
+        '-vars', '--add-custom-vars',
+        help='evaluate the custom project variables (key=val)',
+        dest='custom_vars',
+        nargs='+',
+        required=False,
+        default=[],
+    )
 
     args = parser.parse_args()
 
@@ -139,6 +147,12 @@ def main():  # pragma: no cover
     if args.ignore_absent_sources:
         message(project_context, 'absent source files will be ignored', 'done')
         project_context.ignore_absent_sources = True
+
+    for v in args.custom_vars:
+        parts = str(v).split('=')
+        if len(parts) != 2:
+            raise Exception('bad var input: {}'.format(v))
+        project_context.custom_variables[parts[0]] = parts[1]
 
     converter = VSSolutionConverter()
     converter.convert_solution(project_context, os.path.abspath(args.solution))

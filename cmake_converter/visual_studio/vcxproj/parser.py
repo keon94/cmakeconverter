@@ -126,6 +126,8 @@ class VCXParser(Parser):
             'ClInclude_Include': self.__parse_cl_include_include_attr,
             'None_Include': self.__parse_other_files_include_attr,
             'Text_Include': self.__parse_other_files_include_attr,
+            'Image_Include': self.__parse_other_files_include_attr,
+            'ResourceCompile_Include': self.__parse_other_files_include_attr,
             'Xml_Include': self.__parse_other_files_include_attr,
             'CustomBuild_Include': self.__parse_other_files_include_attr,
             'Condition': self.__parse_condition,

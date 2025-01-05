@@ -4,6 +4,7 @@
 # Copyright (c) 2016-2020:
 #   Matthieu Estrada, ttamalfor@gmail.com
 #   Pavel Liavonau, liavonlida@gmail.com
+#   Keon Amini, keon.a380@gmail.com
 #
 # This file is part of (CMakeConverter).
 #
@@ -322,16 +323,31 @@ def replace_vs_var_with_cmake_var(context, var):
     cmake_env_var = '$ENV{{{}}}'.format(var_name)
     if var_name not in os.environ:
         message(context, 'Unknown variable: {}, trying {}'.format(var, cmake_env_var), 'warn')
+
     return cmake_env_var
+
 
 
 def replace_vs_vars_with_cmake_vars(context, output):
     """ Translates variables at given string to corresponding CMake ones """
-    var_ex = re.compile(r'(\$\(.*?\))')
-
-    vars_list = var_ex.findall(output)
+    cmake_var_regex = re.compile(r'(\$\(.*?\))')
+    vars_list = cmake_var_regex.findall(output)
     for var in vars_list:
         replace_with = replace_vs_var_with_cmake_var(context, var)
+        output = output.replace(var, replace_with)
+
+    return output
+
+def expand_cmake_env_vars(context, output):
+    """ Translates env-variables from a CMake variable"""
+    cmake_env_var_regex = re.compile(r'(\$ENV\{.*?\})')
+    vars_list = cmake_env_var_regex.findall(output)
+    for var in vars_list:
+        var_name = var[5:-1]
+        if var_name not in os.environ:
+            message(context, 'Unknown variable: {}'.format(var), 'warn')
+            continue
+        replace_with = os.environ[var_name]
         output = output.replace(var, replace_with)
 
     return output
@@ -409,6 +425,10 @@ def normalize_path(context, working_path, path_to_normalize, remove_relative=Tru
     :return: normalized path
     :rtype: str
     """
+
+    # path_to_normalize might contain special vars in the form of $(var) - expand them
+    path_to_normalize = replace_vs_vars_with_cmake_vars(context, path_to_normalize)
+    path_to_normalize = expand_cmake_env_vars(context, path_to_normalize)
 
     joined_path = set_native_slash(
         os.path.join(working_path, ntpath.normpath(path_to_normalize.strip()))

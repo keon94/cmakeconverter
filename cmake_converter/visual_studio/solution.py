@@ -4,6 +4,7 @@
 # Copyright (c) 2016-2020:
 #   Matthieu Estrada, ttamalfor@gmail.com
 #   Pavel Liavonau, liavonlida@gmail.com
+#   Keon Amini, keon.a380@gmail.com
 #
 # This file is part of (CMakeConverter).
 #
@@ -303,7 +304,6 @@ class VSSolutionConverter(DataConverter):
         """
         Routine converts Visual studio solution into set of CMakeLists.txt scripts
         """
-
         message(
             project_context, '------- Started parsing solution {} -------'.format(sln_file_path), ''
         )
